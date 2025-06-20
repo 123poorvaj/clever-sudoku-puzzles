@@ -1,12 +1,14 @@
-
 import React, { useState } from 'react';
 import SudokuGame from '../components/SudokuGame';
+import UserProfile from '../components/auth/UserProfile';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [gameKey, setGameKey] = useState(0);
+  const { currentUser } = useAuth();
 
   const difficulties = [
     {
@@ -54,50 +56,65 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-      <div className="max-w-4xl w-full">
+      <div className="max-w-6xl w-full">
         <div className="text-center mb-12 animate-fade-in">
           <h1 className="text-6xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
             SUDOKU
           </h1>
-          <p className="text-xl text-gray-300 mb-8">
+          <p className="text-xl text-gray-300 mb-4">
             Challenge your mind with the classic number puzzle
           </p>
+          {currentUser && (
+            <p className="text-lg text-blue-300">
+              Welcome back, {currentUser.displayName || 'Player'}!
+            </p>
+          )}
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 animate-scale-in">
-          {difficulties.map((difficulty, index) => (
-            <Card 
-              key={difficulty.id}
-              className={`bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer transform hover:scale-105 animate-fade-in`}
-              style={{ animationDelay: `${index * 100}ms` }}
-              onClick={() => startNewGame(difficulty.id)}
-            >
-              <CardHeader className="text-center">
-                <div className={`w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-r ${difficulty.color} flex items-center justify-center`}>
-                  <span className="text-2xl font-bold text-white">
-                    {difficulty.clues}
-                  </span>
-                </div>
-                <CardTitle className="text-2xl text-white">
-                  {difficulty.name}
-                </CardTitle>
-                <CardDescription className="text-gray-300">
-                  {difficulty.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="text-center">
-                <Button 
-                  className={`w-full bg-gradient-to-r ${difficulty.color} hover:opacity-90 text-white font-semibold py-3 rounded-lg transition-all duration-300`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    startNewGame(difficulty.id);
-                  }}
+        <div className="grid lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-3">
+            <div className="grid md:grid-cols-3 gap-6 animate-scale-in">
+              {difficulties.map((difficulty, index) => (
+                <Card 
+                  key={difficulty.id}
+                  className={`bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer transform hover:scale-105 animate-fade-in`}
+                  style={{ animationDelay: `${index * 100}ms` }}
+                  onClick={() => startNewGame(difficulty.id)}
                 >
-                  Start Game
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                  <CardHeader className="text-center">
+                    <div className={`w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-r ${difficulty.color} flex items-center justify-center`}>
+                      <span className="text-2xl font-bold text-white">
+                        {difficulty.clues}
+                      </span>
+                    </div>
+                    <CardTitle className="text-2xl text-white">
+                      {difficulty.name}
+                    </CardTitle>
+                    <CardDescription className="text-gray-300">
+                      {difficulty.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <Button 
+                      className={`w-full bg-gradient-to-r ${difficulty.color} hover:opacity-90 text-white font-semibold py-3 rounded-lg transition-all duration-300`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startNewGame(difficulty.id);
+                      }}
+                    >
+                      Start Game
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          <div className="lg:col-span-1">
+            <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
+              <UserProfile />
+            </div>
+          </div>
         </div>
 
         <div className="text-center mt-12 animate-fade-in" style={{ animationDelay: '400ms' }}>
