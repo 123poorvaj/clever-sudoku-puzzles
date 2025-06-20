@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import SudokuGrid from './SudokuGrid';
 import NumberPad from './NumberPad';
 import GameStats from './GameStats';
+import TopNavigation from './layout/TopNavigation';
 import { Button } from "@/components/ui/button";
 import { generateSudoku, isValidMove, isSudokuComplete } from '../utils/sudokuUtils';
 import { ArrowLeft, RotateCcw } from 'lucide-react';
@@ -110,7 +110,9 @@ const SudokuGame: React.FC<SudokuGameProps> = ({ difficulty, onBackToMenu, clues
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
-      <div className="max-w-6xl mx-auto">
+      <TopNavigation />
+      
+      <div className="max-w-6xl mx-auto pt-16">
         <div className="flex items-center justify-between mb-6">
           <Button
             variant="outline"
