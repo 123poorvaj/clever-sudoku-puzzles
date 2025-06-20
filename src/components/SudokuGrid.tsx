@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 
@@ -30,12 +29,10 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({
       "hover:bg-blue-100 hover:scale-105",
       {
         // Grid borders for 3x3 boxes
-        "border-r-2 border-r-gray-800": col === 2 || col === 5,
-        "border-b-2 border-b-gray-800": row === 2 || row === 5,
+        "border-r-2 border-r-gray-800": col === 2 || col === 5 || col === 8,
+        "border-b-2 border-b-gray-800": row === 2 || row === 5 || row === 8,
         "border-l-2 border-l-gray-800": col === 0,
         "border-t-2 border-t-gray-800": row === 0,
-        "border-r-2 border-r-gray-800": col === 8,
-        "border-b-2 border-b-gray-800": row === 8,
         
         // Cell states
         "bg-blue-200 border-blue-500": isSelected && !isGameComplete,
