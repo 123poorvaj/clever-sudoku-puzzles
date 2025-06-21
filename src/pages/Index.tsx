@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import SudokuGame from '../components/SudokuGame';
 import TopNavigation from '../components/layout/TopNavigation';
@@ -47,7 +46,7 @@ const Index = () => {
   // If user is not logged in, show login requirement message
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-teal-900 to-cyan-900 flex items-center justify-center p-4">
         <TopNavigation />
         
         <div className="max-w-md w-full text-center animate-fade-in">

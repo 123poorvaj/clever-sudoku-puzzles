@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import UserProfile from '@/components/auth/UserProfile';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
 import { Button } from '@/components/ui/button';
-import { User, LogIn } from 'lucide-react';
+import { User } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -45,7 +46,6 @@ const TopNavigation: React.FC = () => {
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <LogIn className="w-4 h-4" />
                 <span className="hidden sm:inline">Login</span>
               </div>
             )}

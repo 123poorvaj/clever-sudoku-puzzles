@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogOut, User, Edit2, Save, X, Camera } from 'lucide-react';
+import { LogOut, User, Edit2, Save, X, Camera, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { updateProfile } from 'firebase/auth';
 
@@ -16,6 +17,7 @@ const UserProfile: React.FC = () => {
   const [displayName, setDisplayName] = useState(currentUser?.displayName || '');
   const [bio, setBio] = useState('');
   const [photoURL, setPhotoURL] = useState(currentUser?.photoURL || '');
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -59,9 +61,14 @@ const UserProfile: React.FC = () => {
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setIsUploadingPhoto(true);
       const reader = new FileReader();
       reader.onload = (e) => {
         setPhotoURL(e.target?.result as string);
+        setIsUploadingPhoto(false);
+        if (!isEditing) {
+          setIsEditing(true);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -115,7 +122,7 @@ const UserProfile: React.FC = () => {
       <CardContent className="space-y-4">
         {/* Profile Photo */}
         <div className="flex flex-col items-center space-y-3">
-          <div className="relative">
+          <div className="relative group">
             <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center">
               {photoURL ? (
                 <img 
@@ -127,18 +134,39 @@ const UserProfile: React.FC = () => {
                 <User className="w-10 h-10 text-white" />
               )}
             </div>
-            {isEditing && (
-              <label className="absolute bottom-0 right-0 bg-blue-500 rounded-full p-1 cursor-pointer hover:bg-blue-600 transition-colors">
-                <Camera className="w-3 h-3 text-white" />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoUpload}
-                  className="hidden"
-                />
-              </label>
-            )}
+            
+            {/* Upload button - always visible */}
+            <label className="absolute bottom-0 right-0 bg-blue-500 rounded-full p-1 cursor-pointer hover:bg-blue-600 transition-colors">
+              <Camera className="w-3 h-3 text-white" />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoUpload}
+                className="hidden"
+              />
+            </label>
           </div>
+          
+          {/* Alternative upload button for better UX */}
+          <label className="cursor-pointer">
+            <Button
+              variant="outline"
+              size="sm"
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              asChild
+            >
+              <div className="flex items-center gap-2">
+                <Upload className="w-4 h-4" />
+                {isUploadingPhoto ? 'Uploading...' : 'Change Photo'}
+              </div>
+            </Button>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoUpload}
+              className="hidden"
+            />
+          </label>
         </div>
 
         {/* Display Name */}
