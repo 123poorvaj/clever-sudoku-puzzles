@@ -47,10 +47,19 @@ const Index = () => {
   // If user is not logged in, show login requirement message
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-blue-600 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-500 to-blue-600 flex items-center justify-center p-4 relative">
+        {/* Logo at the top */}
+        <div className="absolute top-8 left-1/2 transform -translate-x-1/2">
+          <img 
+            src="/lovable-uploads/7ae07408-a357-4dde-a46a-36865c1924b0.png" 
+            alt="MC Logo" 
+            className="w-16 h-16 object-contain"
+          />
+        </div>
+        
         <TopNavigation />
         
-        <div className="max-w-md w-full text-center animate-fade-in">
+        <div className="max-w-md w-full text-center animate-fade-in mt-16">
           <h1 className="text-6xl font-bold text-white mb-4">
             SUDOKU
           </h1>
