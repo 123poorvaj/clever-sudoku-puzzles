@@ -69,7 +69,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
         <CardHeader className="text-center pb-4 pt-8">
           <div className="w-16 h-16 mx-auto mb-6">
             <img 
-              src="/lovable-uploads/f73cea5e-5d0d-4618-ace2-b20a4a80a518.png" 
+              src="/lovable-uploads/d3fd23ab-0e1e-41ff-b624-faeef78325aa.png" 
               alt="Sudoku Logo" 
               className="w-full h-full object-contain"
             />
