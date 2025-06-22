@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   User, 
@@ -32,21 +33,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   const register = async (email: string, password: string, displayName: string) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    await updateProfile(userCredential.user, { displayName });
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Update profile with display name
+      if (userCredential.user) {
+        await updateProfile(userCredential.user, { 
+          displayName: displayName 
+        });
+        
+        // Force refresh the user to get updated profile
+        await userCredential.user.reload();
+        setCurrentUser(userCredential.user);
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
   };
 
   const login = async (email: string, password: string) => {
-    await signInWithEmailAndPassword(auth, email, password);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   };
 
   const logout = async () => {
-    await signOut(auth);
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw error;
+    }
   };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('Auth state changed:', user);
       setCurrentUser(user);
+      setLoading(false);
+    }, (error) => {
+      console.error('Auth state change error:', error);
       setLoading(false);
     });
 
