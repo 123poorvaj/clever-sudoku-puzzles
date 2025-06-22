@@ -8,10 +8,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Phone, Mail } from 'lucide-react';
 
 const loginSchema = z.object({
-  identifier: z.string().email('Please enter a valid email address'),
+  identifier: z.string().min(1, 'Email or phone number is required'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
@@ -24,6 +24,7 @@ interface LoginFormProps {
 const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loginMode, setLoginMode] = useState<'email' | 'phone'>('email');
   const { login } = useAuth();
   const { toast } = useToast();
 
@@ -38,7 +39,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      await login(data.identifier, data.password);
+      // For phone authentication, we'll use Firebase Phone Auth
+      // For now, treating phone as email format for compatibility
+      const identifier = loginMode === 'phone' 
+        ? `${data.identifier}@phone.auth` 
+        : data.identifier;
+      
+      await login(identifier, data.password);
       toast({
         title: "Welcome!",
         description: "You have successfully logged in.",
@@ -59,13 +66,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
     <div className="w-full max-w-md mx-auto">
       <Card className="bg-white border-none shadow-2xl rounded-3xl overflow-hidden">
         <CardHeader className="text-center pb-4 pt-8">
-          <div className="w-16 h-16 mx-auto mb-6">
-            <img 
-              src="/lovable-uploads/d3fd23ab-0e1e-41ff-b624-faeef78325aa.png" 
-              alt="Sudoku Logo" 
-              className="w-full h-full object-contain"
-            />
-          </div>
           <CardTitle className="text-2xl font-bold text-gray-800 mb-2">Welcome!</CardTitle>
           <CardDescription className="text-gray-500 text-sm">
             Sign in to continue your Sudoku journey
@@ -73,15 +73,42 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
         </CardHeader>
         
         <CardContent className="px-8 pb-8">
+          <div className="flex mb-4 bg-gray-100 rounded-lg p-1">
+            <button
+              type="button"
+              onClick={() => setLoginMode('email')}
+              className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                loginMode === 'email' 
+                  ? 'bg-white text-blue-600 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              <Mail className="w-4 h-4 mr-2" />
+              Email
+            </button>
+            <button
+              type="button"
+              onClick={() => setLoginMode('phone')}
+              className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                loginMode === 'phone' 
+                  ? 'bg-white text-blue-600 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              <Phone className="w-4 h-4 mr-2" />
+              Phone
+            </button>
+          </div>
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="identifier" className="text-gray-700 text-sm font-medium">
-                Email
+                {loginMode === 'email' ? 'Email' : 'Phone Number'}
               </Label>
               <Input
                 id="identifier"
-                type="email"
-                placeholder="Enter your email"
+                type={loginMode === 'email' ? 'email' : 'tel'}
+                placeholder={loginMode === 'email' ? 'Enter your email' : 'Enter your phone number'}
                 className="h-12 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-gray-50"
                 {...register('identifier')}
               />
