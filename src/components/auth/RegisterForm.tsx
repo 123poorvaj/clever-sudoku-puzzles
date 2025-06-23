@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -51,9 +50,20 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode }) => {
         description: "Welcome to Sudoku! You can now start playing.",
       });
     } catch (error: any) {
+      let title = "Registration failed";
+      let description = "Please try again.";
+
+      // Check for specific Firebase error codes
+      if (error.code === 'auth/email-already-in-use') {
+        title = "Email already registered";
+        description = "This email is already associated with an account. Please sign in instead or use a different email address.";
+      } else if (error.message) {
+        description = error.message;
+      }
+
       toast({
-        title: "Registration failed",
-        description: error.message || "Please try again.",
+        title,
+        description,
         variant: "destructive",
       });
     } finally {
