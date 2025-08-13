@@ -136,8 +136,8 @@ const GamePage: React.FC<GamePageProps> = ({ onBackToMenu }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
-      <div className="max-w-4xl mx-auto pt-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-2 sm:p-4">
+      <div className="max-w-4xl mx-auto pt-6 sm:pt-8 px-2 sm:px-0">
         <div className="text-center mb-8">
           <h1 className="text-4xl sm:text-6xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
             Choose Difficulty

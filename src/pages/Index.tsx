@@ -28,7 +28,7 @@ const Index = () => {
   // If user is not logged in, show auth forms
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-2 sm:p-4">
         <TopNavigation />
         
         <div className="w-full max-w-md">
@@ -241,10 +241,10 @@ const Index = () => {
 
   // Main menu for logged in users
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-2 sm:p-4">
       <TopNavigation />
       
-      <div className="max-w-4xl mx-auto pt-16">
+      <div className="max-w-4xl mx-auto pt-12 sm:pt-16 px-2 sm:px-0">
         <div className="text-center mb-12 animate-fade-in">
           <h1 className="text-4xl sm:text-6xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
             SUDOKU

@@ -99,5 +99,78 @@
 
   body {
     @apply bg-background text-foreground;
+    /* Prevent zoom on input focus for mobile */
+    touch-action: manipulation;
+  }
+
+  /* Better mobile viewport handling */
+  html {
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
+  }
+
+  /* Smooth scrolling for better mobile experience */
+  * {
+    scroll-behavior: smooth;
+  }
+
+  /* Touch-friendly interactions */
+  button, input, select, textarea {
+    /* Prevent 300ms delay on mobile */
+    touch-action: manipulation;
+  }
+
+  /* Custom animations for mobile optimization */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Mobile-optimized spacing */
+  @media (max-width: 768px) {
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
   }
 }

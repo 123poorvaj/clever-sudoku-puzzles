@@ -25,8 +25,8 @@ const SudokuGrid: React.FC<SudokuGridProps> = ({
     const isEmpty = !grid[row] || grid[row][col] === 0;
     
     return cn(
-      "w-12 h-12 border border-gray-400 flex items-center justify-center text-lg font-bold cursor-pointer transition-all duration-200",
-      "hover:bg-blue-100 hover:scale-105",
+      "w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 border border-gray-400 flex items-center justify-center text-sm sm:text-base md:text-lg font-bold cursor-pointer transition-all duration-200",
+      "hover:bg-blue-100 active:bg-blue-200 touch-manipulation",
       {
         // Grid borders for 3x3 boxes
         "border-r-2 border-r-gray-800": col === 2 || col === 5 || col === 8,
