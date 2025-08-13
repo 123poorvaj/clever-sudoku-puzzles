@@ -10,7 +10,7 @@ import { Play, Trophy, Settings, Info } from 'lucide-react';
 
 const Index = () => {
   const [isLoginMode, setIsLoginMode] = useState(true);
-  const [currentView, setCurrentView] = useState<'menu' | 'game' | 'stats' | 'settings'>('menu');
+  const [currentView, setCurrentView] = useState<'menu' | 'game' | 'stats' | 'settings' | 'howToPlay'>('menu');
   const { currentUser } = useAuth();
 
   const toggleMode = () => {
@@ -108,6 +108,91 @@ const Index = () => {
               className="bg-white/10 border-white/20 text-white hover:bg-white/20"
             >
               Back to Menu
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show how to play page
+  if (currentView === 'howToPlay') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
+        <TopNavigation />
+        <div className="max-w-4xl mx-auto pt-16">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-white mb-4">How to Play Sudoku</h1>
+            <p className="text-gray-300">Master the classic number puzzle game</p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+              <CardHeader>
+                <CardTitle className="text-white">Basic Rules</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-gray-300">
+                <p>• Fill the 9×9 grid with numbers 1-9</p>
+                <p>• Each row must contain all numbers 1-9</p>
+                <p>• Each column must contain all numbers 1-9</p>
+                <p>• Each 3×3 box must contain all numbers 1-9</p>
+                <p>• No number can repeat in any row, column, or box</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+              <CardHeader>
+                <CardTitle className="text-white">Game Controls</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-gray-300">
+                <p>• Click on a cell to select it</p>
+                <p>• Use number keys 1-9 to enter numbers</p>
+                <p>• Use arrow keys to navigate between cells</p>
+                <p>• Press Delete or Backspace to clear a cell</p>
+                <p>• Use the number pad for quick entry</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+              <CardHeader>
+                <CardTitle className="text-white">Solving Tips</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-gray-300">
+                <p>• Start with numbers that appear most frequently</p>
+                <p>• Look for cells with only one possible number</p>
+                <p>• Check rows, columns, and boxes systematically</p>
+                <p>• Use the process of elimination</p>
+                <p>• Take breaks if you get stuck</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+              <CardHeader>
+                <CardTitle className="text-white">Game Features</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-gray-300">
+                <p>• Timer to track your solving speed</p>
+                <p>• Hint system for when you're stuck</p>
+                <p>• Error checking to prevent mistakes</p>
+                <p>• Statistics tracking your progress</p>
+                <p>• Multiple difficulty levels</p>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <div className="text-center">
+            <Button
+              onClick={handleBackToMenu}
+              variant="outline"
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20 mr-4"
+            >
+              Back to Menu
+            </Button>
+            <Button
+              onClick={handleStartGame}
+              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold hover:opacity-90 transition-opacity"
+            >
+              Start Playing
             </Button>
           </div>
         </div>
@@ -253,7 +338,10 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300">
+          <Card 
+            className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer transform hover:scale-105"
+            onClick={() => setCurrentView('howToPlay')}
+          >
             <CardHeader className="text-center">
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
                 <Info className="w-8 h-8 text-white" />
@@ -267,6 +355,10 @@ const Index = () => {
               <Button 
                 variant="outline"
                 className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentView('howToPlay');
+                }}
               >
                 Learn More
               </Button>
