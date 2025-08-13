@@ -8,10 +8,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Phone, Mail } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 
 const loginSchema = z.object({
-  identifier: z.string().min(1, 'Email or phone number is required'),
+  identifier: z.string().min(1, 'Email is required').email('Please enter a valid email'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
@@ -24,7 +24,6 @@ interface LoginFormProps {
 const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [loginMode, setLoginMode] = useState<'email' | 'phone'>('email');
   const { login } = useAuth();
   const { toast } = useToast();
 
@@ -39,13 +38,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      // For phone authentication, we'll use Firebase Phone Auth
-      // For now, treating phone as email format for compatibility
-      const identifier = loginMode === 'phone' 
-        ? `${data.identifier}@phone.auth` 
-        : data.identifier;
-      
-      await login(identifier, data.password);
+      await login(data.identifier, data.password);
       toast({
         title: "Welcome!",
         description: "You have successfully logged in.",
@@ -73,42 +66,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
         </CardHeader>
         
         <CardContent className="px-8 pb-8">
-          <div className="flex mb-4 bg-gray-100 rounded-lg p-1">
-            <button
-              type="button"
-              onClick={() => setLoginMode('email')}
-              className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                loginMode === 'email' 
-                  ? 'bg-white text-blue-600 shadow-sm' 
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              <Mail className="w-4 h-4 mr-2" />
-              Email
-            </button>
-            <button
-              type="button"
-              onClick={() => setLoginMode('phone')}
-              className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                loginMode === 'phone' 
-                  ? 'bg-white text-blue-600 shadow-sm' 
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              <Phone className="w-4 h-4 mr-2" />
-              Phone
-            </button>
-          </div>
-
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="identifier" className="text-gray-700 text-sm font-medium">
-                {loginMode === 'email' ? 'Email' : 'Phone Number'}
+                Email
               </Label>
               <Input
                 id="identifier"
-                type={loginMode === 'email' ? 'email' : 'tel'}
-                placeholder={loginMode === 'email' ? 'Enter your email' : 'Enter your phone number'}
+                type="email"
+                placeholder="Enter your email"
                 className="h-12 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-gray-50"
                 {...register('identifier')}
               />
