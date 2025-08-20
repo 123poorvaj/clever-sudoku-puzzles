@@ -48,8 +48,10 @@ export const GameProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
       await setDoc(doc(db, 'gameProgress', currentUser.uid), progressData);
       setGameProgress(progressData);
+      console.log('Game progress saved:', progressData);
     } catch (error) {
       console.error('Error saving game progress:', error);
+      throw error; // Re-throw to handle in calling component
     }
   };
 

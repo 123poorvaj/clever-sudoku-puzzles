@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import SudokuGame from '@/components/SudokuGame';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trophy, Star, Clock, Target } from 'lucide-react';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Trophy, Star, Clock, Target, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useGameProgress } from '@/contexts/GameProgressContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -177,41 +178,48 @@ const GamePage: React.FC<GamePageProps> = ({ onBackToMenu }) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {difficulties.map((difficulty) => (
-            <Card
-              key={difficulty.name}
-              className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer transform hover:scale-105"
-              onClick={() => handleDifficultySelect(difficulty.name)}
-            >
-              <CardHeader>
-                <div className={`w-12 h-12 mx-auto mb-4 bg-gradient-to-r ${difficulty.color} rounded-full flex items-center justify-center`}>
-                  <Target className="w-6 h-6 text-white" />
-                </div>
-                <CardTitle className="text-white text-center text-2xl">
-                  {difficulty.label}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-center space-y-3">
-                <p className="text-gray-300">{difficulty.description}</p>
-                <div className="flex items-center justify-center space-x-4 text-sm text-gray-400">
-                  <div className="flex items-center space-x-1">
-                    <Clock className="w-4 h-4" />
-                    <span>{difficulty.clues} clues</span>
-                  </div>
-                </div>
-                <Button
-                  className={`w-full bg-gradient-to-r ${difficulty.color} text-white font-semibold hover:opacity-90 transition-opacity`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDifficultySelect(difficulty.name);
-                  }}
-                >
-                  Start Playing
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="relative px-8 sm:px-12">
+          <Carousel className="w-full max-w-5xl mx-auto">
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {difficulties.map((difficulty) => (
+                <CarouselItem key={difficulty.name} className="pl-2 md:pl-4 basis-full md:basis-1/2">
+                  <Card
+                    className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer transform hover:scale-105 h-full"
+                    onClick={() => handleDifficultySelect(difficulty.name)}
+                  >
+                    <CardHeader>
+                      <div className={`w-12 h-12 mx-auto mb-4 bg-gradient-to-r ${difficulty.color} rounded-full flex items-center justify-center`}>
+                        <Target className="w-6 h-6 text-white" />
+                      </div>
+                      <CardTitle className="text-white text-center text-2xl">
+                        {difficulty.label}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-center space-y-3">
+                      <p className="text-gray-300">{difficulty.description}</p>
+                      <div className="flex items-center justify-center space-x-4 text-sm text-gray-400">
+                        <div className="flex items-center space-x-1">
+                          <Clock className="w-4 h-4" />
+                          <span>{difficulty.clues} clues</span>
+                        </div>
+                      </div>
+                      <Button
+                        className={`w-full bg-gradient-to-r ${difficulty.color} text-white font-semibold hover:opacity-90 transition-opacity`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDifficultySelect(difficulty.name);
+                        }}
+                      >
+                        Start Playing
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 bg-white/10 border-white/20 text-white hover:bg-white/20" />
+            <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 bg-white/10 border-white/20 text-white hover:bg-white/20" />
+          </Carousel>
         </div>
 
         <div className="text-center">
