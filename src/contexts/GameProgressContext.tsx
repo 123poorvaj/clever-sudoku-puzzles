@@ -7,11 +7,14 @@ interface GameProgress {
   currentLevel: number;
   difficulty: string;
   lastPlayed: Date;
+  currentGrid?: number[][];
+  moves?: number;
+  gameTime?: number;
 }
 
 interface GameProgressContextType {
   gameProgress: GameProgress | null;
-  saveProgress: (level: number, difficulty: string) => Promise<void>;
+  saveProgress: (level: number, difficulty: string, gameState?: Partial<GameProgress>) => Promise<void>;
   loadProgress: () => Promise<GameProgress | null>;
   clearProgress: () => Promise<void>;
   loading: boolean;
@@ -32,14 +35,15 @@ export const GameProgressProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [gameProgress, setGameProgress] = useState<GameProgress | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const saveProgress = async (level: number, difficulty: string) => {
+  const saveProgress = async (level: number, difficulty: string, gameState?: Partial<GameProgress>) => {
     if (!currentUser) return;
 
     try {
       const progressData: GameProgress = {
         currentLevel: level,
         difficulty,
-        lastPlayed: new Date()
+        lastPlayed: new Date(),
+        ...gameState
       };
 
       await setDoc(doc(db, 'gameProgress', currentUser.uid), progressData);

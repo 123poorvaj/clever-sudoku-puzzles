@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SudokuGame from '@/components/SudokuGame';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trophy, Star, Clock, Target } from 'lucide-react';
 import { useGameProgress } from '@/contexts/GameProgressContext';
 import { useToast } from '@/hooks/use-toast';
-import React, { useEffect } from 'react';
 
 interface GamePageProps {
   onBackToMenu: () => void;

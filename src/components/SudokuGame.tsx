@@ -1,14 +1,16 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import SudokuGrid from './SudokuGrid';
 import NumberPad from './NumberPad';
 import GameStats from './GameStats';
 import TopNavigation from './layout/TopNavigation';
 import { Button } from "@/components/ui/button";
+import { MusicControls } from "@/components/ui/music-controls";
 import { generateSudoku, isValidMove, isSudokuComplete } from '../utils/sudokuUtils';
 import { ArrowLeft, RotateCcw } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useGameProgress } from '@/contexts/GameProgressContext';
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic';
 
 interface SudokuGameProps {
   difficulty: string;
@@ -35,6 +37,18 @@ const SudokuGame: React.FC<SudokuGameProps> = ({
   const [errors, setErrors] = useState<Set<string>>(new Set());
   const { toast } = useToast();
   const { saveProgress } = useGameProgress();
+  const { isPlaying, volume, toggleMusic, changeVolume } = useBackgroundMusic();
+
+  // Auto-save functionality
+  const autoSave = useCallback(() => {
+    if (grid.length > 0 && !isGameComplete) {
+      saveProgress(currentLevel, difficulty, {
+        currentGrid: grid,
+        moves,
+        gameTime
+      });
+    }
+  }, [grid, currentLevel, difficulty, moves, gameTime, isGameComplete, saveProgress]);
 
   useEffect(() => {
     const { puzzle, solution } = generateSudoku(clues);
@@ -66,6 +80,12 @@ const SudokuGame: React.FC<SudokuGameProps> = ({
       }, 2000);
     }
   }, [grid, currentLevel, gameTime, toast, onLevelComplete, difficulty, saveProgress]);
+
+  // Auto-save every 30 seconds
+  useEffect(() => {
+    const autoSaveInterval = setInterval(autoSave, 30000);
+    return () => clearInterval(autoSaveInterval);
+  }, [autoSave]);
 
   // Keyboard controls
   useEffect(() => {
@@ -244,10 +264,18 @@ const SudokuGame: React.FC<SudokuGameProps> = ({
               disabled={isGameComplete}
             />
             
+            <MusicControls
+              isPlaying={isPlaying}
+              volume={volume}
+              onToggleMusic={toggleMusic}
+              onVolumeChange={changeVolume}
+            />
+            
             <div className="text-center text-xs sm:text-sm text-gray-400 bg-white/5 p-3 rounded-lg">
               <p className="mb-1">Keyboard Controls:</p>
               <p>1-9: Place numbers | Arrow keys: Navigate</p>
               <p>Delete/Backspace: Clear cell</p>
+              <p className="mt-2 text-green-400">🎵 Background music & Auto-save enabled</p>
             </div>
           </div>
         </div>
