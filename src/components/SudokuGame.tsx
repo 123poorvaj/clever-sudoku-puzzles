@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { generateSudoku, isValidMove, isSudokuComplete } from '../utils/sudokuUtils';
 import { ArrowLeft, RotateCcw } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useGameProgress } from '@/contexts/GameProgressContext';
 
 interface SudokuGameProps {
   difficulty: string;
@@ -33,6 +34,7 @@ const SudokuGame: React.FC<SudokuGameProps> = ({
   const [isGameComplete, setIsGameComplete] = useState(false);
   const [errors, setErrors] = useState<Set<string>>(new Set());
   const { toast } = useToast();
+  const { saveProgress } = useGameProgress();
 
   useEffect(() => {
     const { puzzle, solution } = generateSudoku(clues);
@@ -45,6 +47,10 @@ const SudokuGame: React.FC<SudokuGameProps> = ({
   useEffect(() => {
     if (grid.length > 0 && isSudokuComplete(grid)) {
       setIsGameComplete(true);
+      
+      // Save progress when level is completed
+      saveProgress(currentLevel + 1, difficulty);
+      
       toast({
         title: "Congratulations! 🎉",
         description: `Level ${currentLevel} completed in ${Math.floor(gameTime / 60)}:${(gameTime % 60).toString().padStart(2, '0')}!`,
@@ -59,7 +65,7 @@ const SudokuGame: React.FC<SudokuGameProps> = ({
         });
       }, 2000);
     }
-  }, [grid, currentLevel, gameTime, toast, onLevelComplete]);
+  }, [grid, currentLevel, gameTime, toast, onLevelComplete, difficulty, saveProgress]);
 
   // Keyboard controls
   useEffect(() => {

@@ -3,6 +3,9 @@ import SudokuGame from '@/components/SudokuGame';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trophy, Star, Clock, Target } from 'lucide-react';
+import { useGameProgress } from '@/contexts/GameProgressContext';
+import { useToast } from '@/hooks/use-toast';
+import React, { useEffect } from 'react';
 
 interface GamePageProps {
   onBackToMenu: () => void;
@@ -12,6 +15,27 @@ const GamePage: React.FC<GamePageProps> = ({ onBackToMenu }) => {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [currentLevel, setCurrentLevel] = useState(1);
   const [showLevelComplete, setShowLevelComplete] = useState(false);
+  const { gameProgress, saveProgress } = useGameProgress();
+  const { toast } = useToast();
+
+  // Load saved progress when component mounts
+  useEffect(() => {
+    if (gameProgress && !selectedDifficulty) {
+      // Only auto-load if user hasn't manually selected a difficulty
+      const shouldResume = window.confirm(
+        `Welcome back! You were on Level ${gameProgress.currentLevel} (${gameProgress.difficulty}). Would you like to continue from where you left off?`
+      );
+      
+      if (shouldResume) {
+        setSelectedDifficulty(gameProgress.difficulty);
+        setCurrentLevel(gameProgress.currentLevel);
+        toast({
+          title: "Progress Restored!",
+          description: `Continuing from Level ${gameProgress.currentLevel} on ${gameProgress.difficulty} difficulty.`,
+        });
+      }
+    }
+  }, [gameProgress, selectedDifficulty, toast]);
 
   const difficulties = [
     { 
@@ -48,15 +72,22 @@ const GamePage: React.FC<GamePageProps> = ({ onBackToMenu }) => {
     setSelectedDifficulty(difficulty);
     setCurrentLevel(1);
     setShowLevelComplete(false);
+    // Save progress when starting a new difficulty
+    saveProgress(1, difficulty);
   };
 
   const handleLevelComplete = () => {
     setShowLevelComplete(true);
+    // Save progress when completing a level
+    if (selectedDifficulty) {
+      saveProgress(currentLevel + 1, selectedDifficulty);
+    }
   };
 
   const handleNextLevel = () => {
     setCurrentLevel(prev => prev + 1);
     setShowLevelComplete(false);
+    // Progress is already saved in handleLevelComplete
   };
 
   const handleBackToMenu = () => {

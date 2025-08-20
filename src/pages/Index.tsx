@@ -7,11 +7,13 @@ import RegisterForm from '@/components/auth/RegisterForm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, Trophy, Settings, Info } from 'lucide-react';
+import { useGameProgress } from '@/contexts/GameProgressContext';
 
 const Index = () => {
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [currentView, setCurrentView] = useState<'menu' | 'game' | 'stats' | 'settings' | 'howToPlay'>('menu');
   const { currentUser } = useAuth();
+  const { gameProgress } = useGameProgress();
 
   const toggleMode = () => {
     setIsLoginMode(!isLoginMode);
@@ -266,12 +268,25 @@ const Index = () => {
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                 <Play className="w-8 h-8 text-white" />
               </div>
-              <CardTitle className="text-white text-xl">Start Game</CardTitle>
+              <CardTitle className="text-white text-xl">
+                {gameProgress && gameProgress.difficulty ? 'Continue Game' : 'Start Game'}
+              </CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <p className="text-gray-300 mb-4">
-                Begin a new Sudoku challenge
-              </p>
+              {gameProgress && gameProgress.difficulty ? (
+                <div className="mb-4">
+                  <p className="text-gray-300 mb-2">
+                    Continue from Level {gameProgress.currentLevel}
+                  </p>
+                  <p className="text-sm text-gray-400 capitalize">
+                    {gameProgress.difficulty} difficulty
+                  </p>
+                </div>
+              ) : (
+                <p className="text-gray-300 mb-4">
+                  Begin a new Sudoku challenge
+                </p>
+              )}
               <Button 
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold hover:opacity-90 transition-opacity"
                 onClick={(e) => {
@@ -279,7 +294,7 @@ const Index = () => {
                   handleStartGame();
                 }}
               >
-                Play Now
+                {gameProgress && gameProgress.difficulty ? 'Continue' : 'Play Now'}
               </Button>
             </CardContent>
           </Card>
