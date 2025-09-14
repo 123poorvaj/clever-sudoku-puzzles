@@ -3,7 +3,7 @@ import SudokuGame from '@/components/SudokuGame';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { Trophy, Star, Clock, Target, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Trophy, Star, Clock, Target } from 'lucide-react';
 import { useGameProgress } from '@/contexts/GameProgressContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -37,43 +37,52 @@ const GamePage: React.FC<GamePageProps> = ({ onBackToMenu }) => {
     }
   }, [gameProgress, selectedDifficulty, toast]);
 
-  const difficulties = [
-    { 
-      name: 'easy', 
-      label: 'Easy', 
-      clues: 45, 
-      color: 'from-green-400 to-green-600',
-      description: 'Perfect for beginners'
-    },
-    { 
-      name: 'medium', 
-      label: 'Medium', 
-      clues: 35, 
-      color: 'from-yellow-400 to-orange-500',
-      description: 'A good challenge'
-    },
-    { 
-      name: 'hard', 
-      label: 'Hard', 
-      clues: 28, 
-      color: 'from-orange-400 to-red-500',
-      description: 'For experienced players'
-    },
-    { 
-      name: 'expert', 
-      label: 'Expert', 
-      clues: 22, 
-      color: 'from-red-400 to-red-600',
-      description: 'Ultimate challenge'
+  // Generate levels 1-100 with progressive difficulty
+  const generateLevels = () => {
+    const levels = [];
+    for (let i = 1; i <= 100; i++) {
+      let clues, color, difficulty;
+      
+      if (i <= 25) {
+        clues = Math.max(45 - Math.floor(i / 5), 35);
+        color = 'from-green-400 to-green-600';
+        difficulty = 'easy';
+      } else if (i <= 50) {
+        clues = Math.max(35 - Math.floor((i - 25) / 5), 25);
+        color = 'from-yellow-400 to-orange-500';
+        difficulty = 'medium';
+      } else if (i <= 75) {
+        clues = Math.max(25 - Math.floor((i - 50) / 5), 20);
+        color = 'from-orange-400 to-red-500';
+        difficulty = 'hard';
+      } else {
+        clues = Math.max(20 - Math.floor((i - 75) / 5), 17);
+        color = 'from-red-400 to-red-600';
+        difficulty = 'expert';
+      }
+      
+      levels.push({
+        level: i,
+        clues,
+        color,
+        difficulty,
+        isUnlocked: i <= (gameProgress?.currentLevel || 1)
+      });
     }
-  ];
+    return levels;
+  };
 
-  const handleDifficultySelect = (difficulty: string) => {
-    setSelectedDifficulty(difficulty);
-    setCurrentLevel(1);
+  const levels = generateLevels();
+
+  const handleLevelSelect = (level: number) => {
+    const selectedLevel = levels.find(l => l.level === level);
+    if (!selectedLevel || !selectedLevel.isUnlocked) return;
+    
+    setSelectedDifficulty(selectedLevel.difficulty);
+    setCurrentLevel(level);
     setShowLevelComplete(false);
-    // Save progress when starting a new difficulty
-    saveProgress(1, difficulty);
+    // Save progress when starting a level
+    saveProgress(level, selectedLevel.difficulty);
   };
 
   const handleLevelComplete = () => {
@@ -96,13 +105,9 @@ const GamePage: React.FC<GamePageProps> = ({ onBackToMenu }) => {
     onBackToMenu();
   };
 
-  const getCluesForLevel = (difficulty: string, level: number) => {
-    const baseDifficulty = difficulties.find(d => d.name === difficulty);
-    if (!baseDifficulty) return 35;
-    
-    // Reduce clues slightly as level increases (max reduction of 5)
-    const reduction = Math.min(Math.floor((level - 1) / 2), 5);
-    return Math.max(baseDifficulty.clues - reduction, 17); // Minimum 17 clues for solvability
+  const getCluesForLevel = (level: number) => {
+    const levelData = levels.find(l => l.level === level);
+    return levelData?.clues || 35;
   };
 
   if (showLevelComplete) {
@@ -117,7 +122,7 @@ const GamePage: React.FC<GamePageProps> = ({ onBackToMenu }) => {
           </CardHeader>
           <CardContent className="space-y-4 text-center">
             <p className="text-gray-300">
-              Congratulations! You've completed Level {currentLevel} on {selectedDifficulty} difficulty.
+              Congratulations! You've completed Level {currentLevel}!
             </p>
             <div className="flex justify-center space-x-2">
               {[...Array(5)].map((_, i) => (
@@ -136,7 +141,7 @@ const GamePage: React.FC<GamePageProps> = ({ onBackToMenu }) => {
                 variant="outline"
                 className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20"
               >
-                Change Difficulty
+                Select Another Level
               </Button>
               <Button
                 onClick={handleBackToMenu}
@@ -153,7 +158,7 @@ const GamePage: React.FC<GamePageProps> = ({ onBackToMenu }) => {
   }
 
   if (selectedDifficulty) {
-    const clues = getCluesForLevel(selectedDifficulty, currentLevel);
+    const clues = getCluesForLevel(currentLevel);
     
     return (
       <SudokuGame
@@ -171,47 +176,62 @@ const GamePage: React.FC<GamePageProps> = ({ onBackToMenu }) => {
       <div className="max-w-4xl mx-auto pt-6 sm:pt-8 px-2 sm:px-0">
         <div className="text-center mb-8">
           <h1 className="text-4xl sm:text-6xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Choose Difficulty
+            Select Level
           </h1>
           <p className="text-gray-300 text-lg">
-            Select your challenge level to begin playing
+            Choose from 100 challenging levels
+          </p>
+          <p className="text-gray-400 text-sm mt-2">
+            Progress: {gameProgress?.currentLevel || 1}/100 levels unlocked
           </p>
         </div>
 
-        <div className="relative px-8 sm:px-12">
-          <Carousel className="w-full max-w-5xl mx-auto">
-            <CarouselContent className="-ml-2 md:-ml-4">
-              {difficulties.map((difficulty) => (
-                <CarouselItem key={difficulty.name} className="pl-2 md:pl-4 basis-full md:basis-1/2">
+        <div className="relative px-4 sm:px-8">
+          <Carousel className="w-full max-w-6xl mx-auto">
+            <CarouselContent className="-ml-1 md:-ml-2">
+              {levels.map((level) => (
+                <CarouselItem key={level.level} className="pl-1 md:pl-2 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5">
                   <Card
-                    className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer transform hover:scale-105 h-full"
-                    onClick={() => handleDifficultySelect(difficulty.name)}
+                    className={`bg-white/10 backdrop-blur-sm border-white/20 transition-all duration-300 h-full ${
+                      level.isUnlocked 
+                        ? 'hover:bg-white/20 cursor-pointer transform hover:scale-105' 
+                        : 'opacity-50 cursor-not-allowed'
+                    }`}
+                    onClick={() => level.isUnlocked && handleLevelSelect(level.level)}
                   >
-                    <CardHeader>
-                      <div className={`w-12 h-12 mx-auto mb-4 bg-gradient-to-r ${difficulty.color} rounded-full flex items-center justify-center`}>
-                        <Target className="w-6 h-6 text-white" />
+                    <CardHeader className="pb-2">
+                      <div className={`w-10 h-10 mx-auto mb-2 bg-gradient-to-r ${level.color} rounded-full flex items-center justify-center ${
+                        level.isUnlocked ? '' : 'grayscale'
+                      }`}>
+                        {level.isUnlocked ? (
+                          <span className="text-white font-bold text-sm">{level.level}</span>
+                        ) : (
+                          <span className="text-white text-lg">🔒</span>
+                        )}
                       </div>
-                      <CardTitle className="text-white text-center text-2xl">
-                        {difficulty.label}
+                      <CardTitle className="text-white text-center text-lg">
+                        Level {level.level}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="text-center space-y-3">
-                      <p className="text-gray-300">{difficulty.description}</p>
-                      <div className="flex items-center justify-center space-x-4 text-sm text-gray-400">
-                        <div className="flex items-center space-x-1">
-                          <Clock className="w-4 h-4" />
-                          <span>{difficulty.clues} clues</span>
-                        </div>
+                    <CardContent className="text-center space-y-2 pt-0">
+                      <div className="text-xs text-gray-400">
+                        {level.clues} clues
                       </div>
-                      <Button
-                        className={`w-full bg-gradient-to-r ${difficulty.color} text-white font-semibold hover:opacity-90 transition-opacity`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDifficultySelect(difficulty.name);
-                        }}
-                      >
-                        Start Playing
-                      </Button>
+                      <div className="text-xs text-gray-300 capitalize">
+                        {level.difficulty}
+                      </div>
+                      {level.isUnlocked && (
+                        <Button
+                          size="sm"
+                          className={`w-full bg-gradient-to-r ${level.color} text-white font-semibold hover:opacity-90 transition-opacity text-xs`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLevelSelect(level.level);
+                          }}
+                        >
+                          Play
+                        </Button>
+                      )}
                     </CardContent>
                   </Card>
                 </CarouselItem>
